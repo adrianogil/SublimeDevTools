@@ -23,9 +23,11 @@ class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
             replace_text = ''
             print("AutomatedNumberedDebugCommand  selected: " + str(selected_text))
             n_debug = 0
-            valid_content_between_newlines = True
+            valid_content_between_newlines = False
             for s in selected_text:
                 replace_text = replace_text + s
+                if s == ';':
+                    valid_content_between_newlines = True
                 if s == '\n':
                     print("AutomatedNumberedDebugCommand - Identified newline")
                     if valid_content_between_newlines:
@@ -33,7 +35,5 @@ class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
                         n_debug = n_debug + 1
                         replace_text = replace_text + current_debug + '\n'
                         valid_content_between_newlines = False
-                elif s != ' ' or s != '\t':
-                    valid_content_between_newlines = True
-                
+
             self.view.replace(edit, region, replace_text)
