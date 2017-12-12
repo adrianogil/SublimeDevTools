@@ -1,5 +1,17 @@
 import sublime, sublime_plugin
 
+class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+
+        current_file = self.view.file_name()
+
+        if current_file is None:
+            return
+
+        where_to_search = current_file
+
+        self.view.window().run_command("show_panel", {"panel": "find_in_files", "where": where_to_search})
+
 class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
     def run(self, edit):
 

@@ -1,5 +1,9 @@
 [
     {   "caption": "Automated numbered debug in selection",
         "command": "automated_numbered_debug"
+    },
+    {
+        "caption": "FindMe: string in current file",
+        "command": "find_me_current_source"
     }
 ]
