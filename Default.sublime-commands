@@ -5,5 +5,8 @@
     {
         "caption": "FindMe: string in current file",
         "command": "find_me_current_source"
+    },
+    {   "caption": "Open Terminal in project folder",
+        "command": "open_project_in_terminal"
     }
 ]

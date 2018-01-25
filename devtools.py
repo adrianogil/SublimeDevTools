@@ -1,4 +1,4 @@
-import sublime, sublime_plugin
+import sublime, sublime_plugin, subprocess
 
 class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -49,3 +49,10 @@ class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
                         valid_content_between_newlines = False
 
             self.view.replace(edit, region, replace_text)
+
+class OpenProjectInTerminal(sublime_plugin.TextCommand):
+    def run(self, edit):
+        folders = self.view.window().folders()
+
+        open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
+        subprocess.check_output(open_in_terminal_cmd, shell=True)
