@@ -56,3 +56,30 @@ class OpenProjectInTerminal(sublime_plugin.TextCommand):
 
         open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
+
+
+class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        if current_file is None:
+            return
+
+        target_from_clipboard = sublime.get_clipboard()
+
+        targets = []
+
+        for region in self.view.sel():
+            content = self.view.substr(region)
+            begin = content.find(target_from_clipboard)
+            if begin == -1:
+                return
+            end = begin + len(target_from_clipboard)
+            target_region = sublime.Region(begin, end)
+            targets.append(target_region)
+
+        self.view.sel().clear()
+        for t in targets:
+            self.view.sel().add(t)
+
+
