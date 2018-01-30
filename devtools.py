@@ -67,16 +67,32 @@ class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
 
         target_from_clipboard = sublime.get_clipboard()
 
+        print("SmartSelectionFromClipboard: " + target_from_clipboard)
+
         targets = []
 
         for region in self.view.sel():
-            content = self.view.substr(region)
-            begin = content.find(target_from_clipboard)
-            if begin == -1:
-                return
-            end = begin + len(target_from_clipboard)
-            target_region = sublime.Region(begin, end)
-            targets.append(target_region)
+            current_begin = region.begin()
+            current_end = region.end()
+
+            found_all = False
+
+            while current_begin < current_end and not found_all:
+                current_region = sublime.Region(current_begin, current_end)
+                content = self.view.substr(current_region)
+                begin = content.find(target_from_clipboard) 
+                if begin == -1:
+                    found_all = True
+                else:
+                    begin = begin + current_begin
+                    end = begin + len(target_from_clipboard)
+                    target_region = sublime.Region(begin, end)
+
+                    print("SmartSelectionFromClipboard: added region " + str(begin) + " - " + str(end))
+
+                    targets.append(target_region)
+
+                    current_begin = end + 1
 
         self.view.sel().clear()
         for t in targets:
