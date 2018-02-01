@@ -11,5 +11,8 @@
     },
     {   "caption": "Smart Selection From Clipboard",
         "command": "smart_selection_from_clipboard"
+    },
+    {   "caption": "SplitMe",
+        "command": "split_me"
     }
 ]

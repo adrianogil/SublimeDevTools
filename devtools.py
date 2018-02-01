@@ -57,6 +57,21 @@ class OpenProjectInTerminal(sublime_plugin.TextCommand):
         open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
 
+class SplitMe(sublime_plugin.TextCommand):
+    def run(self, edit):
+        split_object = sublime.get_clipboard()
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            split_text = selected_text.split(split_object)
+
+            new_text = ''
+
+            for s in split_text:
+                new_text = new_text + s + '\n'
+
+            self.view.replace(edit, region, new_text)
 
 class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -80,7 +95,7 @@ class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
             while current_begin < current_end and not found_all:
                 current_region = sublime.Region(current_begin, current_end)
                 content = self.view.substr(current_region)
-                begin = content.find(target_from_clipboard) 
+                begin = content.find(target_from_clipboard)
                 if begin == -1:
                     found_all = True
                 else:
