@@ -14,5 +14,8 @@
     },
     {   "caption": "SplitMe",
         "command": "split_me"
+    },
+    {   "caption": "InvertMe",
+        "command": "invert_me"
     }
 ]

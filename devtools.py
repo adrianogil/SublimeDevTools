@@ -57,6 +57,15 @@ class OpenProjectInTerminal(sublime_plugin.TextCommand):
         open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
 
+
+class InvertMe(sublime_plugin.TextCommand):
+    def run(self, edit):
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            self.view.replace(edit, region, selected_text[::-1])
+
 class SplitMe(sublime_plugin.TextCommand):
     def run(self, edit):
         split_object = sublime.get_clipboard()
