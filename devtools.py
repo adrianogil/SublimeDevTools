@@ -82,6 +82,23 @@ class SplitMe(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+class SortMe(sublime_plugin.TextCommand):
+    def run(self, edit):
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            split_text = selected_text.split('\n')
+
+            split_text.sort()
+
+            new_text = ''
+
+            for s in split_text:
+                new_text = new_text + s + '\n'
+
+            self.view.replace(edit, region, new_text)
+
 class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
         current_file = self.view.file_name()
@@ -121,5 +138,3 @@ class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
         self.view.sel().clear()
         for t in targets:
             self.view.sel().add(t)
-
-

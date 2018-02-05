@@ -15,7 +15,7 @@
     {   "caption": "SplitMe",
         "command": "split_me"
     },
-    {   "caption": "InvertMe",
-        "command": "invert_me"
+    {   "caption": "SortMe",
+        "command": "sort_me"
     }
 ]
