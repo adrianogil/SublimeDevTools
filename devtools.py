@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, subprocess
+import sublime, sublime_plugin, subprocess, os
 
 class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -57,6 +57,17 @@ class OpenProjectInTerminal(sublime_plugin.TextCommand):
         open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
 
+class OpenPathInTerminal(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        if current_file is None:
+            return
+
+        current_path = os.path.dirname(current_file)
+
+        open_in_terminal_cmd = 'open -a Terminal "' + current_path + '"'
+        subprocess.check_output(open_in_terminal_cmd, shell=True)
 
 class InvertMe(sublime_plugin.TextCommand):
     def run(self, edit):

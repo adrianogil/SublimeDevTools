@@ -9,6 +9,9 @@
     {   "caption": "Open Terminal in project folder",
         "command": "open_project_in_terminal"
     },
+    {   "caption": "Open Terminal in current folder",
+        "command": "open_path_in_terminal"
+    },
     {   "caption": "Smart Selection From Clipboard",
         "command": "smart_selection_from_clipboard"
     },
