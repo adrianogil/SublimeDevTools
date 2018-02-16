@@ -93,6 +93,19 @@ class SplitMe(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+class SmartReplaceFromClipboard(sublime_plugin.TextCommand):
+    def run(self, edit):
+        replace_format = sublime.get_clipboard()
+
+        replace_string = '%LV%'
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            new_text = replace_format.replace(replace_string, selected_text)
+
+            self.view.replace(edit, region, new_text)
+
 class SortMe(sublime_plugin.TextCommand):
     def run(self, edit):
 
