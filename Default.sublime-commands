@@ -18,6 +18,9 @@
     {   "caption": "Smart Replace From Clipboard",
         "command": "smart_replace_from_clipboard"
     },
+    {   "caption": "Smart Replace: Evaluate Clipboard Instances",
+        "command": "evolve_from_clipboard_instances"
+    },
     {   "caption": "SplitMe",
         "command": "split_me"
     },

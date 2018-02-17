@@ -106,6 +106,101 @@ class SmartReplaceFromClipboard(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        pass
+ 
+    return False
+
+def is_operation(s):
+    return s == '*' or s == '+' or s == '-' or s == '/'
+
+class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
+    def run(self, edit):
+        instances = sublime.get_clipboard()
+
+        instances_values = []
+
+        if is_int(instances[0]):
+            number_1 = ''
+            number_2 = '.'
+
+            for s in instances:
+                if number_2 == '.':
+                    if is_int(s):
+                        number_1 = number_1 + s
+                    else:
+                        number_2 = ''
+                elif is_int(s):
+                    number_2 = number_2 + s
+
+            number_1 = int(number_1)
+            number_2 = int(number_2)
+
+            for i in range(number_1, number_2+1):
+                instances_values.append(str(i))
+
+        elif instances[0] == '{' and instances[len(instances)-1] == '}':
+            instances_values = instances[1:len(instances)-1].split(',')
+        else:
+            return
+
+        replace_string = '%LV%'
+
+        for region in self.view.sel():
+            selected_text_pattern = self.view.substr(region)
+
+            new_text = ''
+
+            for instance in instances_values:
+                if is_int(instance):
+                    i = 0
+                    while i < len(selected_text_pattern):
+                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i+3] == '%LV':
+                            current_number = int(instance)
+                            current_operation=''
+                            number_str = ''
+                            i = i + 3
+                            while selected_text_pattern[i] != '%':
+                                if is_operation(selected_text_pattern[i]):
+                                    if current_operation == '':
+                                        pass
+                                    elif number_str != '':
+                                        if current_operation == '+':
+                                            current_number = current_number + int(number_str)
+                                        elif current_operation == '-':
+                                            current_number = current_number - int(number_str)
+                                        elif current_operation == '*':
+                                            current_number = current_number * int(number_str)
+                                        elif current_operation == '/':
+                                            current_number = current_number / int(number_str)
+                                        number_str = ''
+                                    current_operation = selected_text_pattern[i]
+                                elif is_int(selected_text_pattern[i]):
+                                    number_str = number_str + selected_text_pattern[i]
+                                i = i + 1
+                            if number_str != '' and current_operation != '':
+                                if current_operation == '+':
+                                    current_number = current_number + int(number_str)
+                                elif current_operation == '-':
+                                    current_number = current_number - int(number_str)
+                                elif current_operation == '*':
+                                    current_number = current_number * int(number_str)
+                                elif current_operation == '/':
+                                    current_number = current_number / int(number_str)
+                            new_text = new_text + str(current_number)
+                            i = i + 1
+                        else:
+                            new_text = new_text + selected_text_pattern[i]
+                            i = i + 1
+                else:
+                    new_text = new_text + selected_text_pattern.replace(replace_string, instance)
+
+            self.view.replace(edit, region, new_text)
+
 class SortMe(sublime_plugin.TextCommand):
     def run(self, edit):
 
