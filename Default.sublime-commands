@@ -26,5 +26,8 @@
     },
     {   "caption": "SortMe",
         "command": "sort_me"
+    },
+    {   "caption": "DevTools: Operation Counter",
+        "command": "operation_counter"
     }
 ]

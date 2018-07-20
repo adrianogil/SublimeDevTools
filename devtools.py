@@ -257,3 +257,43 @@ class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
         self.view.sel().clear()
         for t in targets:
             self.view.sel().add(t)
+
+class OperationCounter(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        if current_file is None:
+            return
+
+        regions = self.view.sel()
+        if len(regions) == 0:
+            return
+
+        region = regions[0]
+
+        selected_text = self.view.substr(region)
+
+        total_selected_text = len(selected_text)
+
+        s = 0
+
+        total_operations = 0
+
+        while s < total_selected_text:
+            current_char = selected_text[s]
+            if current_char == '=':
+                total_operations = total_operations + 1
+                if selected_text[s+1] == '==':
+                    s = s + 1
+            elif current_char == '*' or \
+                 current_char == '/' or \
+                 current_char == '+' or \
+                 current_char == '-':
+                total_operations = total_operations + 1
+
+            s = s + 1
+
+        popup_text = "<b>Total operations:</b> " + str(total_operations)
+        self.view.show_popup(popup_text)
+        # print('Total operations - ' + str(total_operations))
+
