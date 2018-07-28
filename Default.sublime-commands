@@ -29,5 +29,11 @@
     },
     {   "caption": "DevTools: Operation Counter",
         "command": "operation_counter"
+    },
+    {   "caption": "DevTools: Open Finder in current folder",
+        "command": "open_path_in_finder"
+    },
+    {   "caption": "DevTools: Open Finder in project folder",
+        "command": "open_project_in_finder"
     }
 ]

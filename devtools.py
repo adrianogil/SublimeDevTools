@@ -297,3 +297,21 @@ class OperationCounter(sublime_plugin.TextCommand):
         self.view.show_popup(popup_text)
         # print('Total operations - ' + str(total_operations))
 
+class OpenPathInFinder(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        if current_file is None:
+            return
+
+        current_path = os.path.dirname(current_file)
+
+        open_in_terminal_cmd = 'open "' + current_path + '"'
+        subprocess.check_output(open_in_terminal_cmd, shell=True)
+
+class OpenProjectInFinder(sublime_plugin.TextCommand):
+    def run(self, edit):
+        folders = self.view.window().folders()
+
+        open_in_terminal_cmd = 'open "' + folders[0] + '"'
+        subprocess.check_output(open_in_terminal_cmd, shell=True)
