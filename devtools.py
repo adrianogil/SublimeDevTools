@@ -315,3 +315,32 @@ class OpenProjectInFinder(sublime_plugin.TextCommand):
 
         open_in_terminal_cmd = 'open "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
+
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        pass
+ 
+    return False
+
+class RepeatTool(sublime_plugin.TextCommand):
+    def run(self, edit):
+
+        repeat_time = sublime.get_clipboard()
+
+        if not is_int(repeat_time):
+            return
+
+        repeat_time = int(repeat_time)
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            repeat_text = ""
+
+            for i in range(0, repeat_time):
+                repeat_text = repeat_text + selected_text
+
+            self.view.replace(edit, region, repeat_text)

@@ -35,5 +35,8 @@
     },
     {   "caption": "DevTools: Open Finder in project folder",
         "command": "open_project_in_finder"
+    },
+    {   "caption": "DevTools: Repeat X times (from Clipboard)",
+        "command": "repeat_tool"
     }
 ]
