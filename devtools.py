@@ -112,7 +112,7 @@ def is_int(s):
         return True
     except ValueError:
         pass
- 
+
     return False
 
 def is_operation(s):
@@ -322,7 +322,7 @@ def is_int(s):
         return True
     except ValueError:
         pass
- 
+
     return False
 
 class RepeatTool(sublime_plugin.TextCommand):
@@ -344,3 +344,24 @@ class RepeatTool(sublime_plugin.TextCommand):
                 repeat_text = repeat_text + selected_text
 
             self.view.replace(edit, region, repeat_text)
+
+class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            subprocess_cmd = "source ~/.bashrc && " + selected_text
+
+            if current_file is not None and os.path.exists(current_file):
+                current_path = os.path.dirname(current_file)
+                subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
+
+            print(subprocess_cmd)
+            subprocess_output = subprocess.check_output(subprocess_cmd, shell=True)
+            subprocess_output = subprocess_output.decode("utf8")
+            subprocess_output = subprocess_output.strip()
+            print("Output: " + subprocess_output)
+
+            self.view.replace(edit, region, subprocess_output)

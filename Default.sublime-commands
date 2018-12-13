@@ -38,5 +38,12 @@
     },
     {   "caption": "DevTools: Repeat X times (from Clipboard)",
         "command": "repeat_tool"
-    }
+    },
+    {   "caption": "DevTools: Open Maya Documentation",
+        "command": "show_maya_docs"
+    },
+    {   "caption": "DevTools: Run Terminal Command",
+        "command": "run_terminal_command_inside_sublime"
+    },
+
 ]
