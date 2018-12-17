@@ -368,6 +368,10 @@ class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
             if current_file is not None and os.path.exists(current_file):
                 current_path = os.path.dirname(current_file)
                 subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
+            else:
+                folders = self.view.window().folders()
+                if folders is not None and len(folders) > 0:
+                    subprocess_cmd = "cd '" + folders[0] + "' && " + subprocess_cmd
 
             print(subprocess_cmd)
             subprocess_output = subprocess.check_output(subprocess_cmd, shell=True, executable=ibash_exe)
