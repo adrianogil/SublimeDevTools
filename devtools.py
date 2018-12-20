@@ -380,3 +380,47 @@ class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
             print("Output: " + subprocess_output)
 
             self.view.replace(edit, region, subprocess_output)
+
+class RunTerminalCommandInsideSublimeBuffer(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            ibash_exe = "/usr/local/bin/interactive_bash"
+
+            if not os.path.exists(ibash_exe):
+                ibash_create_cmd = "echo '#!/bin/bash' >> " + ibash_exe + \
+                    " &&    echo '/bin/bash -i \"$@\"' >> " \
+                    + ibash_exe + " && chmod +x " + ibash_exe
+                print(ibash_create_cmd)
+                ibash_create_output = subprocess.check_output(ibash_create_cmd, shell=True)
+                ibash_create_output = ibash_create_output.strip()
+                print(ibash_create_output)
+
+            subprocess_cmd = selected_text
+
+            if current_file is not None and os.path.exists(current_file):
+                current_path = os.path.dirname(current_file)
+                subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
+            else:
+                folders = self.view.window().folders()
+                if folders is not None and len(folders) > 0:
+                    subprocess_cmd = "cd '" + folders[0] + "' && " + subprocess_cmd
+
+            print(subprocess_cmd)
+            subprocess_output = subprocess.check_output(subprocess_cmd, shell=True, executable=ibash_exe)
+            subprocess_output = subprocess_output.decode("utf8")
+            subprocess_output = subprocess_output.strip()
+            print("Output: " + subprocess_output)
+
+            scratch_file = self.view.window().new_file()
+            scratch_file.set_name('Command Output')
+            scratch_file.set_scratch(True)
+            args = {
+                'contents': subprocess_output
+            }
+            scratch_file.run_command('insert_snippet', args)
+            scratch_file.set_read_only(True)
+            scratch_file.settings().set('word_wrap', True)

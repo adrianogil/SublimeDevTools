@@ -2,6 +2,7 @@ import sublime, sublime_plugin, subprocess, os
 
 import webbrowser
 
+
 class ShowMayaDocs(sublime_plugin.TextCommand):
     def run(self, edit):
         for region in self.view.sel():
