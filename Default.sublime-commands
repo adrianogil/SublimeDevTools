@@ -39,11 +39,14 @@
     {   "caption": "DevTools: Repeat X times (from Clipboard)",
         "command": "repeat_tool"
     },
+    {   "caption": "DevTools: Run Terminal Command",
+        "command": "run_terminal_command_inside_sublime"
+    },
     {   "caption": "DevTools: Open Maya Documentation",
         "command": "show_maya_docs"
     },
-    {   "caption": "DevTools: Run Terminal Command",
-        "command": "run_terminal_command_inside_sublime"
+    {   "caption": "DevTools: Generate Maya Call of current script",
+        "command": "generate_maya_call"
     },
     {   "caption": "DevTools: Run Terminal Command in a new View",
         "command": "run_terminal_command_inside_sublime_buffer"
