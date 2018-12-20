@@ -424,3 +424,35 @@ class RunTerminalCommandInsideSublimeBuffer(sublime_plugin.TextCommand):
             scratch_file.run_command('insert_snippet', args)
             scratch_file.set_read_only(True)
             scratch_file.settings().set('word_wrap', True)
+
+
+class RunPythonOnText(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            python_cmd = sublime.get_clipboard()
+
+            python_cmd = "s = '''" + selected_text + "'''\n" + python_cmd
+
+            import sys
+            import StringIO
+            import contextlib
+
+            @contextlib.contextmanager
+            def stdoutIO(stdout=None):
+                old = sys.stdout
+                if stdout is None:
+                    stdout = StringIO.StringIO()
+                sys.stdout = stdout
+                yield stdout
+                sys.stdout = old
+
+            with stdoutIO() as s:
+                exec(python_cmd)
+
+            cmd_output = s.getvalue()
+
+            self.view.replace(edit, region, cmd_output)

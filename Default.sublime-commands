@@ -48,5 +48,8 @@
     {   "caption": "DevTools: Run Terminal Command in a new View",
         "command": "run_terminal_command_inside_sublime_buffer"
     },
+    {   "caption": "DevTools: Run Python Command",
+        "command": "run_python_on_text"
+    },
 
 ]
