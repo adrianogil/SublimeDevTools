@@ -435,24 +435,19 @@ class RunPythonOnText(sublime_plugin.TextCommand):
 
             python_cmd = sublime.get_clipboard()
 
-            python_cmd = "s = '''" + selected_text + "'''\n" + python_cmd
+            python_cmd += "\nwith open('/tmp/tmp_sublime_buffer', 'w') as f:\n\tf.write(s)"
 
-            import sys
-            import StringIO
-            import contextlib
+            print("RunPythonOnText: " + python_cmd)
 
-            @contextlib.contextmanager
-            def stdoutIO(stdout=None):
-                old = sys.stdout
-                if stdout is None:
-                    stdout = StringIO.StringIO()
-                sys.stdout = stdout
-                yield stdout
-                sys.stdout = old
+            s = selected_text
+            exec(python_cmd)
 
-            with stdoutIO() as s:
-                exec(python_cmd)
+            with open('/tmp/tmp_sublime_buffer', 'r') as f:
+                cmd_output_from_file = f.readlines()
 
-            cmd_output = s.getvalue()
+            cmd_output = cmd_output_from_file[0]
+
+            print("RunPythonOnText: " + cmd_output)
 
             self.view.replace(edit, region, cmd_output)
+
