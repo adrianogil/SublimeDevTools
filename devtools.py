@@ -77,6 +77,21 @@ class InvertMe(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, selected_text[::-1])
 
+class InvertLines(sublime_plugin.TextCommand):
+    def run(self, edit):
+
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            selected_text_lines = selected_text.split("\n")
+            selected_text_lines = selected_text_lines[::-1]
+
+            new_text = ""
+            for l in selected_text_lines:
+                new_text += l + "\n"
+
+            self.view.replace(edit, region, new_text)
+
 class SplitMe(sublime_plugin.TextCommand):
     def run(self, edit):
         split_object = sublime.get_clipboard()
@@ -150,10 +165,63 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
 
         replace_string = '%LV%'
 
+        
+        index = 0
         for region in self.view.sel():
             selected_text_pattern = self.view.substr(region)
 
             new_text = ''
+
+            if len(self.view.sel()) == len(instances):
+                instance = instances[index]
+                index += 1
+
+                if is_int(instance):
+                    i = 0
+                    while i < len(selected_text_pattern):
+                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i+3] == '%LV':
+                            current_number = int(instance)
+                            current_operation=''
+                            number_str = ''
+                            i = i + 3
+                            while selected_text_pattern[i] != '%':
+                                if is_operation(selected_text_pattern[i]):
+                                    if current_operation == '':
+                                        pass
+                                    elif number_str != '':
+                                        if current_operation == '+':
+                                            current_number = current_number + int(number_str)
+                                        elif current_operation == '-':
+                                            current_number = current_number - int(number_str)
+                                        elif current_operation == '*':
+                                            current_number = current_number * int(number_str)
+                                        elif current_operation == '/':
+                                            current_number = current_number / int(number_str)
+                                        number_str = ''
+                                    current_operation = selected_text_pattern[i]
+                                elif is_int(selected_text_pattern[i]):
+                                    number_str = number_str + selected_text_pattern[i]
+                                i = i + 1
+                            if number_str != '' and current_operation != '':
+                                if current_operation == '+':
+                                    current_number = current_number + int(number_str)
+                                elif current_operation == '-':
+                                    current_number = current_number - int(number_str)
+                                elif current_operation == '*':
+                                    current_number = current_number * int(number_str)
+                                elif current_operation == '/':
+                                    current_number = current_number / int(number_str)
+                            new_text = new_text + str(current_number)
+                            i = i + 1
+                        else:
+                            new_text = new_text + selected_text_pattern[i]
+                            i = i + 1
+                else:
+                    new_text = new_text + selected_text_pattern.replace(replace_string, instance)
+
+                self.view.replace(edit, region, new_text)
+
+                continue
 
             for instance in instances_values:
                 if is_int(instance):
@@ -345,6 +413,7 @@ class RepeatTool(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, repeat_text)
 
+
 class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
     def run(self, edit):
         current_file = self.view.file_name()
@@ -368,6 +437,9 @@ class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
             if current_file is not None and os.path.exists(current_file):
                 current_path = os.path.dirname(current_file)
                 subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
+
+                if '$FILE' in subprocess_cmd:
+                    subprocess_cmd = subprocess_cmd.replace('$FILE', current_file)
             else:
                 folders = self.view.window().folders()
                 if folders is not None and len(folders) > 0:

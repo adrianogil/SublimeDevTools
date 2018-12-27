@@ -21,11 +21,17 @@
     {   "caption": "Smart Replace: Evaluate Clipboard Instances",
         "command": "evolve_from_clipboard_instances"
     },
-    {   "caption": "SplitMe",
+    {   "caption": "DevTools: SplitMe",
         "command": "split_me"
     },
-    {   "caption": "SortMe",
+    {   "caption": "DevTools: SortMe",
         "command": "sort_me"
+    },
+    {   "caption": "DevTools: Invert Text",
+        "command": "invert_me"
+    },
+    {   "caption": "DevTools: Invert Lines",
+        "command": "invert_lines"
     },
     {   "caption": "DevTools: Operation Counter",
         "command": "operation_counter"
