@@ -60,5 +60,10 @@
     {   "caption": "DevTools: Run Python Command",
         "command": "run_python_on_text"
     },
-
+    {   "caption": "DevTools: Save Current Window Layout",
+        "command": "save_sublime_window_layout"
+    },
+    {   "caption": "DevTools: Load Current Window Layout",
+        "command": "load_sublime_window_layout"
+    },
 ]
