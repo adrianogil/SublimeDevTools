@@ -165,7 +165,7 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
 
         replace_string = '%LV%'
 
-        
+
         index = 0
         for region in self.view.sel():
             selected_text_pattern = self.view.substr(region)
@@ -414,84 +414,69 @@ class RepeatTool(sublime_plugin.TextCommand):
             self.view.replace(edit, region, repeat_text)
 
 
+def run_terminal_command(cmd_obj, cmd_txt):
+    ibash_exe = "/usr/local/bin/interactive_bash"
+
+    current_file = cmd_obj.view.file_name()
+
+    if not os.path.exists(ibash_exe):
+        ibash_create_cmd = "echo '#!/bin/bash' >> " + ibash_exe + \
+            " &&    echo '/bin/bash -i \"$@\"' >> " \
+            + ibash_exe + " && chmod +x " + ibash_exe
+        print(ibash_create_cmd)
+        ibash_create_output = subprocess.check_output(ibash_create_cmd, shell=True)
+        ibash_create_output = ibash_create_output.strip()
+        print(ibash_create_output)
+
+    subprocess_cmd = cmd_txt
+
+    folders = cmd_obj.view.window().folders()
+    if folders is not None and len(folders) > 0:
+        if '$SBTPROJ' in subprocess_cmd:
+            subprocess_cmd = subprocess_cmd.replace('$SBTPROJ', folders[0])
+
+    if current_file is not None and os.path.exists(current_file):
+        current_path = os.path.dirname(current_file)
+        subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
+
+        if '$FILE' in subprocess_cmd:
+            subprocess_cmd = subprocess_cmd.replace('$FILE', current_file)
+        if '$CURDIR' in subprocess_cmd:
+            subprocess_cmd = subprocess_cmd.replace('$CURDIR', current_path)
+    else:
+        if folders is not None and len(folders) > 0:
+            subprocess_cmd = "cd '" + folders[0] + "' && " + subprocess_cmd
+
+    print(subprocess_cmd)
+    subprocess_output = subprocess.check_output(subprocess_cmd, shell=True, executable=ibash_exe)
+    subprocess_output = subprocess_output.decode("utf8")
+    subprocess_output = subprocess_output.strip()
+    print("Output: " + subprocess_output)
+
+    return subprocess_output
+
 class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
     def run(self, edit):
-        current_file = self.view.file_name()
-
         for region in self.view.sel():
             selected_text = self.view.substr(region)
 
-            ibash_exe = "/usr/local/bin/interactive_bash"
+            terminal_output = run_terminal_command(self, selected_text)
 
-            if not os.path.exists(ibash_exe):
-                ibash_create_cmd = "echo '#!/bin/bash' >> " + ibash_exe + \
-                    " &&    echo '/bin/bash -i \"$@\"' >> " \
-                    + ibash_exe + " && chmod +x " + ibash_exe
-                print(ibash_create_cmd)
-                ibash_create_output = subprocess.check_output(ibash_create_cmd, shell=True)
-                ibash_create_output = ibash_create_output.strip()
-                print(ibash_create_output)
-
-            subprocess_cmd = selected_text
-
-            if current_file is not None and os.path.exists(current_file):
-                current_path = os.path.dirname(current_file)
-                subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
-
-                if '$FILE' in subprocess_cmd:
-                    subprocess_cmd = subprocess_cmd.replace('$FILE', current_file)
-            else:
-                folders = self.view.window().folders()
-                if folders is not None and len(folders) > 0:
-                    subprocess_cmd = "cd '" + folders[0] + "' && " + subprocess_cmd
-
-            print(subprocess_cmd)
-            subprocess_output = subprocess.check_output(subprocess_cmd, shell=True, executable=ibash_exe)
-            subprocess_output = subprocess_output.decode("utf8")
-            subprocess_output = subprocess_output.strip()
-            print("Output: " + subprocess_output)
-
-            self.view.replace(edit, region, subprocess_output)
+            self.view.replace(edit, region, terminal_output)
 
 class RunTerminalCommandInsideSublimeBuffer(sublime_plugin.TextCommand):
     def run(self, edit):
-        current_file = self.view.file_name()
 
         for region in self.view.sel():
             selected_text = self.view.substr(region)
 
-            ibash_exe = "/usr/local/bin/interactive_bash"
-
-            if not os.path.exists(ibash_exe):
-                ibash_create_cmd = "echo '#!/bin/bash' >> " + ibash_exe + \
-                    " &&    echo '/bin/bash -i \"$@\"' >> " \
-                    + ibash_exe + " && chmod +x " + ibash_exe
-                print(ibash_create_cmd)
-                ibash_create_output = subprocess.check_output(ibash_create_cmd, shell=True)
-                ibash_create_output = ibash_create_output.strip()
-                print(ibash_create_output)
-
-            subprocess_cmd = selected_text
-
-            if current_file is not None and os.path.exists(current_file):
-                current_path = os.path.dirname(current_file)
-                subprocess_cmd = "cd '" + current_path + "' && " + subprocess_cmd
-            else:
-                folders = self.view.window().folders()
-                if folders is not None and len(folders) > 0:
-                    subprocess_cmd = "cd '" + folders[0] + "' && " + subprocess_cmd
-
-            print(subprocess_cmd)
-            subprocess_output = subprocess.check_output(subprocess_cmd, shell=True, executable=ibash_exe)
-            subprocess_output = subprocess_output.decode("utf8")
-            subprocess_output = subprocess_output.strip()
-            print("Output: " + subprocess_output)
+            terminal_output = run_terminal_command(self, selected_text)
 
             scratch_file = self.view.window().new_file()
             scratch_file.set_name('Command Output')
             scratch_file.set_scratch(True)
             args = {
-                'contents': subprocess_output
+                'contents': terminal_output
             }
             scratch_file.run_command('insert_snippet', args)
             scratch_file.set_read_only(True)
