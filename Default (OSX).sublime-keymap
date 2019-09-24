@@ -1,0 +1,4 @@
+[
+    { "keys": ["super+shift+k"], "command": "print_func_log" },
+    { "keys": ["super+shift+l"], "command": "smart_selection_from_clipboard" },
+]
