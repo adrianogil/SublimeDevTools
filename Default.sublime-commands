@@ -66,4 +66,10 @@
     {   "caption": "DevTools: Load Current Window Layout",
         "command": "load_sublime_window_layout"
     },
+    {   "caption": "DevTools: Generate python code",
+        "command": "gen_python_code"
+    },
+    {   "caption": "DevTools: Smart log",
+        "command": "print_func_log"
+    },
 ]

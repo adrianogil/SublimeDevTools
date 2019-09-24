@@ -1,5 +1,6 @@
 import sublime, sublime_plugin, subprocess, os
 
+
 class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
 
@@ -11,6 +12,7 @@ class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
         where_to_search = current_file
 
         self.view.window().run_command("show_panel", {"panel": "find_in_files", "where": where_to_search})
+
 
 class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -507,4 +509,32 @@ class RunPythonOnText(sublime_plugin.TextCommand):
             print("RunPythonOnText: " + cmd_output)
 
             self.view.replace(edit, region, cmd_output)
+
+
+class PrintFuncLog(sublime_plugin.TextCommand):
+    def get_current_scope(self, view, target_scope_type):
+        sel = view.sel()[0]
+        functionRegs = view.find_by_selector(target_scope_type)
+        cf = None
+        for r in reversed(functionRegs):
+            if r.a < sel.a:
+                cf = view.substr(r)
+                break
+
+        return cf
+
+    def run(self, edit):
+        print("PrintFuncLog:run")
+        class_name = self.get_current_scope(self.view, 'entity.name.class')
+        function_name = self.get_current_scope(self.view, 'entity.name.function')
+        debug_name = class_name + ":" + function_name
+        print("PrintFuncLog: " + debug_name)
+        current_file = self.view.file_name()
+        if current_file is not None:
+            debug_statement = ""
+            if current_file.endswith(".py"):
+                debug_statement = 'print("%s")' % (debug_name,)
+            elif current_file.endswith(".cs"):
+                debug_statement = 'Debug.Log("%s");' % (debug_name,)
+            self.view.replace(edit, self.view.sel()[0], debug_statement)
 
