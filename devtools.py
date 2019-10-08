@@ -135,6 +135,15 @@ def is_int(s):
 def is_operation(s):
     return s == '*' or s == '+' or s == '-' or s == '/'
 
+
+smart_symbol = "%LV%"
+
+
+class InsertSmartValueSymbol(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.view.replace(edit, self.view.sel()[0], smart_symbol)
+
+
 class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
     def run(self, edit):
         instances = sublime.get_clipboard()
@@ -165,7 +174,7 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
         else:
             return
 
-        replace_string = '%LV%'
+        replace_string = smart_symbol
 
 
         index = 0
