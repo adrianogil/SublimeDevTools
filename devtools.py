@@ -1,6 +1,25 @@
 import sublime, sublime_plugin, subprocess, os
 
 
+class ConvertToSnakeFromCamelCaseCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        for region in self.view.sel():
+            selected_text = self.view.substr(region)
+
+            new_text = ""
+
+            for s in selected_text:
+                if s.isupper():
+                    if new_text != "":
+                        new_text += "_" + s.lower()
+                    else:
+                        new_text += s.lower()
+                else:
+                    new_text += s
+
+            self.view.replace(edit, region, new_text)
+
+
 class FindMeCurrentSourceCommand(sublime_plugin.TextCommand):
     def run(self, edit):
 

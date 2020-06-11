@@ -72,4 +72,7 @@
     {   "caption": "DevTools: Smart log",
         "command": "print_func_log"
     },
+    {   "caption": "DevTools: Convert to Snake case from Camel case",
+        "command": "convert_to_snake_from_camel_case"
+    },
 ]
