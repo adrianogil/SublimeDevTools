@@ -522,7 +522,7 @@ class RunPythonOnText(sublime_plugin.TextCommand):
 
             python_cmd = sublime.get_clipboard()
 
-            python_cmd += "\nwith open('/tmp/tmp_sublime_buffer', 'w') as f:\n\tf.write(s)"
+            python_cmd += "\nwith open('/tmp/tmp_sublime_buffer', 'w') as f:\n\tf.write(str(s))"
 
             print("RunPythonOnText: " + python_cmd)
 
