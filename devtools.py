@@ -1,4 +1,8 @@
-import sublime, sublime_plugin, subprocess, os
+import sublime_plugin
+import sublime
+
+import subprocess
+import os
 
 
 class ConvertToSnakeFromCamelCaseCommand(sublime_plugin.TextCommand):
@@ -48,7 +52,7 @@ class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
 
         repl_pattern_str = '%LV%'
 
-        if not repl_pattern_str in current_clipboard:
+        if repl_pattern_str not in current_clipboard:
             return
 
         for region in self.view.sel():
@@ -71,12 +75,14 @@ class AutomatedNumberedDebugCommand(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, replace_text)
 
+
 class OpenProjectInTerminal(sublime_plugin.TextCommand):
     def run(self, edit):
         folders = self.view.window().folders()
 
         open_in_terminal_cmd = 'open -a Terminal "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
+
 
 class OpenPathInTerminal(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -90,6 +96,7 @@ class OpenPathInTerminal(sublime_plugin.TextCommand):
         open_in_terminal_cmd = 'open -a Terminal "' + current_path + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
 
+
 class InvertMe(sublime_plugin.TextCommand):
     def run(self, edit):
 
@@ -97,6 +104,7 @@ class InvertMe(sublime_plugin.TextCommand):
             selected_text = self.view.substr(region)
 
             self.view.replace(edit, region, selected_text[::-1])
+
 
 class InvertLines(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -108,10 +116,11 @@ class InvertLines(sublime_plugin.TextCommand):
             selected_text_lines = selected_text_lines[::-1]
 
             new_text = ""
-            for l in selected_text_lines:
-                new_text += l + "\n"
+            for line in selected_text_lines:
+                new_text += line + "\n"
 
             self.view.replace(edit, region, new_text)
+
 
 class SplitMe(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -129,6 +138,7 @@ class SplitMe(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+
 class SmartReplaceFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
         replace_format = sublime.get_clipboard()
@@ -142,6 +152,7 @@ class SmartReplaceFromClipboard(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+
 def is_int(s):
     try:
         int(s)
@@ -150,6 +161,7 @@ def is_int(s):
         pass
 
     return False
+
 
 def is_operation(s):
     return s == '*' or s == '+' or s == '-' or s == '/'
@@ -485,6 +497,7 @@ def run_terminal_command(cmd_obj, cmd_txt):
 
     return subprocess_output
 
+
 class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
     def run(self, edit):
         for region in self.view.sel():
@@ -493,6 +506,7 @@ class RunTerminalCommandInsideSublime(sublime_plugin.TextCommand):
             terminal_output = run_terminal_command(self, selected_text)
 
             self.view.replace(edit, region, terminal_output)
+
 
 class RunTerminalCommandInsideSublimeBuffer(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -565,4 +579,3 @@ class PrintFuncLog(sublime_plugin.TextCommand):
             elif current_file.endswith(".cs"):
                 debug_statement = 'Debug.Log("%s");' % (debug_name,)
             self.view.replace(edit, self.view.sel()[0], debug_statement)
-
