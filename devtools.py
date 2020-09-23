@@ -566,16 +566,23 @@ class PrintFuncLog(sublime_plugin.TextCommand):
         return cf
 
     def run(self, edit):
-        print("PrintFuncLog:run")
+        print("PrintFuncLog::run")
+
         class_name = self.get_current_scope(self.view, 'entity.name.class')
         function_name = self.get_current_scope(self.view, 'entity.name.function')
-        debug_name = class_name + ":" + function_name
+
+        if class_name is None:
+            debug_name = function_name
+        else:
+            debug_name = class_name + ":" + function_name
+
         print("PrintFuncLog: " + debug_name)
         current_file = self.view.file_name()
         if current_file is not None:
             debug_statement = ""
             if current_file.endswith(".py"):
-                debug_statement = 'print("%s")' % (debug_name,)
+                module_name = os.path.basename(current_file).replace('.py', '')
+                debug_statement = "print('%s:%s')" % (module_name, debug_name)
             elif current_file.endswith(".cs"):
                 debug_statement = 'Debug.Log("%s");' % (debug_name,)
             self.view.replace(edit, self.view.sel()[0], debug_statement)
