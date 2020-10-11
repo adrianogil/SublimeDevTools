@@ -143,6 +143,7 @@ class SmartReplaceFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
         replace_format = sublime.get_clipboard()
 
+        print("SmartReplaceFromClipboard - using replace_format: " + str(replace_format))
         replace_string = '%LV%'
 
         for region in self.view.sel():
@@ -576,7 +577,7 @@ class PrintFuncLog(sublime_plugin.TextCommand):
         else:
             debug_name = class_name + ":" + function_name
 
-        print("PrintFuncLog: " + debug_name)
+        print("PrintFuncLog: " + str(debug_name))
         current_file = self.view.file_name()
         if current_file is not None:
             debug_statement = ""
