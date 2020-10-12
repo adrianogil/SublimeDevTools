@@ -3,5 +3,6 @@
     { "keys": ["super+alt+l"], "command": "insert_smart_value_symbol" },
     { "keys": ["super+shift+l"], "command": "smart_selection_from_clipboard" },
     { "keys": ["super+alt+w"], "command": "close_other_tabs" },
-    { "keys": ["super+alt+r"], "command": "close_to_right"}
+    { "keys": ["super+alt+r"], "command": "close_to_right"},
+    { "keys": ["super+alt+t"], "command": "close_unmodified_tabs"}
 ]

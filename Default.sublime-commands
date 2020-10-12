@@ -82,5 +82,9 @@
     {
         "caption": "DevTools: Close tabs to the Right",
         "command": "close_to_right"
+    },
+    {
+        "caption": "DevTools: Close unmodified tabs",
+        "command": "close_unmodified_tabs"
     }
 ]
