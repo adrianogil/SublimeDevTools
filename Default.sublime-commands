@@ -75,8 +75,12 @@
     {   "caption": "DevTools: Convert to Snake case from Camel case",
         "command": "convert_to_snake_from_camel_case"
     },
-     {
+    {
         "caption": "DevTools: Close all tabs except the active one",
         "command": "close_other_tabs"
+    },
+    {
+        "caption": "DevTools: Close tabs to the Right",
+        "command": "close_to_right"
     }
 ]
