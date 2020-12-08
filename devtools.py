@@ -198,16 +198,15 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
             number_1 = int(number_1)
             number_2 = int(number_2)
 
-            for i in range(number_1, number_2+1):
+            for i in range(number_1, number_2 + 1):
                 instances_values.append(str(i))
 
-        elif instances[0] == '{' and instances[len(instances)-1] == '}':
-            instances_values = instances[1:len(instances)-1].split(',')
+        elif instances[0] == '{' and instances[len(instances) - 1] == '}':
+            instances_values = instances[1:len(instances) - 1].split(',')
         else:
             return
 
         replace_string = smart_symbol
-
 
         index = 0
         for region in self.view.sel():
@@ -222,9 +221,9 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
                 if is_int(instance):
                     i = 0
                     while i < len(selected_text_pattern):
-                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i+3] == '%LV':
+                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i + 3] == '%LV':
                             current_number = int(instance)
-                            current_operation=''
+                            current_operation = ''
                             number_str = ''
                             i = i + 3
                             while selected_text_pattern[i] != '%':
@@ -270,9 +269,9 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
                 if is_int(instance):
                     i = 0
                     while i < len(selected_text_pattern):
-                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i+3] == '%LV':
+                        if i < len(selected_text_pattern) - 4 and selected_text_pattern[i:i + 3] == '%LV':
                             current_number = int(instance)
-                            current_operation=''
+                            current_operation = ''
                             number_str = ''
                             i = i + 3
                             while selected_text_pattern[i] != '%':
@@ -312,6 +311,7 @@ class EvolveFromClipboardInstances(sublime_plugin.TextCommand):
 
             self.view.replace(edit, region, new_text)
 
+
 class SortMe(sublime_plugin.TextCommand):
     def run(self, edit):
 
@@ -328,6 +328,7 @@ class SortMe(sublime_plugin.TextCommand):
                 new_text = new_text + s + '\n'
 
             self.view.replace(edit, region, new_text)
+
 
 class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -369,6 +370,7 @@ class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
         for t in targets:
             self.view.sel().add(t)
 
+
 class OperationCounter(sublime_plugin.TextCommand):
     def run(self, edit):
         current_file = self.view.file_name()
@@ -394,12 +396,12 @@ class OperationCounter(sublime_plugin.TextCommand):
             current_char = selected_text[s]
             if current_char == '=':
                 total_operations = total_operations + 1
-                if selected_text[s+1] == '==':
+                if selected_text[s + 1] == '==':
                     s = s + 1
             elif current_char == '*' or \
-                 current_char == '/' or \
-                 current_char == '+' or \
-                 current_char == '-':
+                    current_char == '/' or \
+                    current_char == '+' or \
+                    current_char == '-':
                 total_operations = total_operations + 1
 
             s = s + 1
@@ -407,6 +409,7 @@ class OperationCounter(sublime_plugin.TextCommand):
         popup_text = "<b>Total operations:</b> " + str(total_operations)
         self.view.show_popup(popup_text)
         # print('Total operations - ' + str(total_operations))
+
 
 class OpenPathInFinder(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -420,12 +423,14 @@ class OpenPathInFinder(sublime_plugin.TextCommand):
         open_in_terminal_cmd = 'open "' + current_path + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
 
+
 class OpenProjectInFinder(sublime_plugin.TextCommand):
     def run(self, edit):
         folders = self.view.window().folders()
 
         open_in_terminal_cmd = 'open "' + folders[0] + '"'
         subprocess.check_output(open_in_terminal_cmd, shell=True)
+
 
 def is_int(s):
     try:
@@ -435,6 +440,7 @@ def is_int(s):
         pass
 
     return False
+
 
 class RepeatTool(sublime_plugin.TextCommand):
     def run(self, edit):
@@ -569,6 +575,14 @@ class PrintFuncLog(sublime_plugin.TextCommand):
     def run(self, edit):
         print("PrintFuncLog::run")
 
+        current_file = self.view.file_name()
+        if current_file is None:
+            return
+
+        regions = self.view.sel()
+        if len(regions) <= 0:
+            return
+
         class_name = self.get_current_scope(self.view, 'entity.name.class')
         function_name = self.get_current_scope(self.view, 'entity.name.function')
 
@@ -578,12 +592,35 @@ class PrintFuncLog(sublime_plugin.TextCommand):
             debug_name = class_name + ":" + function_name
 
         print("PrintFuncLog: " + str(debug_name))
-        current_file = self.view.file_name()
-        if current_file is not None:
-            debug_statement = ""
-            if current_file.endswith(".py"):
-                module_name = os.path.basename(current_file).replace('.py', '')
-                debug_statement = "print('%s:%s')" % (module_name, debug_name)
-            elif current_file.endswith(".cs"):
+
+        target_region = regions[0]
+        target_vars = []
+
+        if len(regions) > 1:
+            for i in range(0, len(regions)):
+                region = regions[i]
+                selected_text = self.view.substr(region)
+                if selected_text == '':
+                    target_region = region
+                else:
+                    target_vars.append(selected_text)
+
+        debug_statement = ""
+        if current_file.endswith(".py"):
+            module_name = os.path.basename(current_file).replace('.py', '')
+            if len(target_vars) > 0:
+                debug_statement = "print('[%s]%s -'" % (module_name, debug_name)
+                for variable in target_vars:
+                    debug_statement += " + ' %s - ' + str(%s)" % (variable, variable)
+                debug_statement += ')'
+            else:
+                debug_statement = "print('[%s]%s')" % (module_name, debug_name)
+        elif current_file.endswith(".cs"):
+            if len(target_vars) > 0:
+                debug_statement = "Debug.Log('%s -'" % (debug_name)
+                for variable in target_vars:
+                    debug_statement += " + ' %s - ' + %s" % (variable, variable)
+                debug_statement += ');'
+            else:
                 debug_statement = 'Debug.Log("%s");' % (debug_name,)
-            self.view.replace(edit, self.view.sel()[0], debug_statement)
+        self.view.replace(edit, target_region, debug_statement)

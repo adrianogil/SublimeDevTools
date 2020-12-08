@@ -1,6 +1,11 @@
-import sublime, sublime_plugin
+"""
+    Tools related to Sublime Layout/Windows/Tabs
 
+"""
+import sublime_plugin
+import sublime
 import json
+
 
 class LoadSublimeWindowLayoutCommand(sublime_plugin.TextCommand):
     def run(self, edit):
