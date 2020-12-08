@@ -332,11 +332,6 @@ class SortMe(sublime_plugin.TextCommand):
 
 class SmartSelectionFromClipboard(sublime_plugin.TextCommand):
     def run(self, edit):
-        current_file = self.view.file_name()
-
-        if current_file is None:
-            return
-
         target_from_clipboard = sublime.get_clipboard()
 
         print("SmartSelectionFromClipboard: " + target_from_clipboard)
