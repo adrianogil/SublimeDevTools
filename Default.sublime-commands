@@ -86,5 +86,9 @@
     {
         "caption": "DevTools: Close unmodified tabs",
         "command": "close_unmodified_tabs"
+    },
+    {
+        "caption": "DevTools: Get Python Module Name",
+        "command": "get_python_full_module_name"
     }
 ]

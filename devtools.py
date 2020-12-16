@@ -619,3 +619,29 @@ class PrintFuncLog(sublime_plugin.TextCommand):
             else:
                 debug_statement = 'Debug.Log("%s");' % (debug_name,)
         self.view.replace(edit, target_region, debug_statement)
+
+
+class GetPythonFullModuleName(sublime_plugin.TextCommand):
+    def run(self, edit):
+        current_file = self.view.file_name()
+
+        if not current_file or not current_file.endswith('.py'):
+            return
+
+        module_name = os.path.basename(current_file).replace('.py', '')
+
+        folders = current_file.split('/')
+
+        for i in range(1, len(folders)):
+            current_folder = folders[-(i + 1)]
+            folder_path = "/".join(folders[:-i])
+
+            possible_init_path = os.path.join(folder_path, '__init__.py')
+            print('Testing folder %s' % (possible_init_path,))
+
+            if os.path.exists(possible_init_path):
+                module_name = current_folder + "." + module_name
+            else:
+                break
+
+        sublime.set_clipboard(module_name)
