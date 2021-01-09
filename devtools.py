@@ -612,9 +612,9 @@ class PrintFuncLog(sublime_plugin.TextCommand):
                 debug_statement = "print('[%s]%s')" % (module_name, debug_name)
         elif current_file.endswith(".cs"):
             if len(target_vars) > 0:
-                debug_statement = "Debug.Log('%s -'" % (debug_name)
+                debug_statement = "Debug.Log(\"%s -\"" % (debug_name)
                 for variable in target_vars:
-                    debug_statement += " + ' %s - ' + %s" % (variable, variable)
+                    debug_statement += " + \" %s - \" + %s" % (variable, variable)
                 debug_statement += ');'
             else:
                 debug_statement = 'Debug.Log("%s");' % (debug_name,)
