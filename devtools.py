@@ -555,6 +555,25 @@ class RunPythonOnText(sublime_plugin.TextCommand):
             self.view.replace(edit, region, cmd_output)
 
 
+def get_python_module(python_file):
+    module_name = os.path.basename(python_file).replace('.py', '')
+
+    folders = python_file.split('/')
+
+    for i in range(1, len(folders)):
+        current_folder = folders[-(i + 1)]
+        folder_path = "/".join(folders[:-i])
+
+        possible_init_path = os.path.join(folder_path, '__init__.py')
+        print('Testing folder %s' % (possible_init_path,))
+
+        if os.path.exists(possible_init_path):
+            module_name = current_folder + "." + module_name
+        else:
+            break
+    return module_name
+
+
 class PrintFuncLog(sublime_plugin.TextCommand):
     def get_current_scope(self, view, target_scope_type):
         sel = view.sel()[0]
@@ -602,7 +621,7 @@ class PrintFuncLog(sublime_plugin.TextCommand):
 
         debug_statement = ""
         if current_file.endswith(".py"):
-            module_name = os.path.basename(current_file).replace('.py', '')
+            module_name = get_python_module(current_file)
             if len(target_vars) > 0:
                 debug_statement = "print('[%s]%s -'" % (module_name, debug_name)
                 for variable in target_vars:
@@ -628,20 +647,6 @@ class GetPythonFullModuleName(sublime_plugin.TextCommand):
         if not current_file or not current_file.endswith('.py'):
             return
 
-        module_name = os.path.basename(current_file).replace('.py', '')
-
-        folders = current_file.split('/')
-
-        for i in range(1, len(folders)):
-            current_folder = folders[-(i + 1)]
-            folder_path = "/".join(folders[:-i])
-
-            possible_init_path = os.path.join(folder_path, '__init__.py')
-            print('Testing folder %s' % (possible_init_path,))
-
-            if os.path.exists(possible_init_path):
-                module_name = current_folder + "." + module_name
-            else:
-                break
+        module_name = get_python_module(current_file)
 
         sublime.set_clipboard(module_name)
