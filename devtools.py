@@ -531,24 +531,32 @@ class RunTerminalCommandInsideSublimeBuffer(sublime_plugin.TextCommand):
 
 class RunPythonOnText(sublime_plugin.TextCommand):
     def run(self, edit):
-        current_file = self.view.file_name()
-
         for region in self.view.sel():
             selected_text = self.view.substr(region)
 
             python_cmd = sublime.get_clipboard()
 
-            python_cmd += "\nwith open('/tmp/tmp_sublime_buffer', 'w') as f:\n\tf.write(str(s))"
+            cmd_output = ''
 
-            print("RunPythonOnText: " + python_cmd)
+            if python_cmd and 's' in python_cmd:
+                try:
+                    python_cmd += "\nwith open('/tmp/tmp_sublime_buffer', 'w') as f:\n\tf.write(str(s))"
 
-            s = selected_text
-            exec(python_cmd)
+                    print("RunPythonOnText: " + python_cmd)
 
-            with open('/tmp/tmp_sublime_buffer', 'r') as f:
-                cmd_output_from_file = f.readlines()
+                    s = selected_text
+                    exec(python_cmd)
 
-            cmd_output = cmd_output_from_file[0]
+                    with open('/tmp/tmp_sublime_buffer', 'r') as f:
+                        cmd_output_from_file = f.readlines()
+
+                    cmd_output = cmd_output_from_file[0]
+                except Exception as exception:
+                    cmd_output = eval(selected_text)
+            elif selected_text:
+                cmd_output = eval(selected_text)
+
+            cmd_output = str(cmd_output)
 
             print("RunPythonOnText: " + cmd_output)
 
@@ -623,12 +631,12 @@ class PrintFuncLog(sublime_plugin.TextCommand):
         if current_file.endswith(".py"):
             module_name = get_python_module(current_file)
             if len(target_vars) > 0:
-                debug_statement = "print('[%s]%s -'" % (module_name, debug_name)
+                debug_statement = "print('[%s] %s -'" % (module_name, debug_name)
                 for variable in target_vars:
                     debug_statement += " + ' %s - ' + str(%s)" % (variable, variable)
                 debug_statement += ')'
             else:
-                debug_statement = "print('[%s]%s')" % (module_name, debug_name)
+                debug_statement = "print('[%s] %s')" % (module_name, debug_name)
         elif current_file.endswith(".cs"):
             if len(target_vars) > 0:
                 debug_statement = "Debug.Log(\"%s -\"" % (debug_name)
